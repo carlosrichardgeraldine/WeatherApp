@@ -14,7 +14,7 @@ import java.util.List;
 
 public class WeatherService {
 
-    private static final String API_KEY = "your_api_key_here";
+    private static final String API_KEY = "dfa8ac5e7bd643c5a444cf3bbbc4c344";
     private static final String CURRENT_URL =
             "https://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s&units=%s";
     private static final String FORECAST_URL =

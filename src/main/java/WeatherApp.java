@@ -288,10 +288,10 @@ public class WeatherApp extends Application {
     private void updateUIWithWeather(String city, CurrentWeather current, List<ForecastEntry> forecast) {
         Platform.runLater(() -> {
 
-            tempLabel.setText(String.format("%.0f°", current.getTemperature()));
-            conditionLabel.setText(current.getDescription());
+            tempLabel.setText(String.format("%.0f°", current.temperature()));
+            conditionLabel.setText(current.description());
 
-            int offsetSeconds = forecast.getFirst().getTimezoneOffset();
+            int offsetSeconds = forecast.getFirst().timezoneOffset();
             ZoneId cityZone = ZoneId.ofOffset("UTC", ZoneOffset.ofTotalSeconds(offsetSeconds));
             lastForecastTimezoneOffset = offsetSeconds;
 
@@ -299,25 +299,25 @@ public class WeatherApp extends Application {
             cityTimeLabel.setText(city + " – " + localTime);
 
             double maxTemp = forecast.stream()
-                    .mapToDouble(ForecastEntry::getTemperature)
+                    .mapToDouble(ForecastEntry::temperature)
                     .max()
-                    .orElse(current.getTemperature());
+                    .orElse(current.temperature());
 
             double minTemp = forecast.stream()
-                    .mapToDouble(ForecastEntry::getTemperature)
+                    .mapToDouble(ForecastEntry::temperature)
                     .min()
-                    .orElse(current.getTemperature());
+                    .orElse(current.temperature());
 
             String highLow = String.format("%.0f° / %.0f°", maxTemp, minTemp);
             ((Label)((VBox)centerPane.getChildren().get(1)).getChildren().get(3)).setText(highLow);
 
-            humidityInfo.setText("Humidity " + current.getHumidity() + "%");
+            humidityInfo.setText("Humidity " + current.humidity() + "%");
 
-            double windSpeed = current.getWindSpeed();
+            double windSpeed = current.windSpeed();
             if (windUnitBox.getValue().equals("km/h")) windSpeed *= 3.6;
             windInfo.setText(String.format("Wind %.1f %s", windSpeed, windUnitBox.getValue()));
 
-            loadIcon(current.getIconCode());
+            loadIcon(current.iconCode());
 
             HBox hourlyRow = (HBox)((ScrollPane)centerPane.getChildren().get(2)).getContent();
             hourlyRow.getChildren().clear();
@@ -326,8 +326,8 @@ public class WeatherApp extends Application {
 
             for (ForecastEntry fe : forecast.subList(0, Math.min(8, forecast.size()))) {
                 VBox hourBox = new VBox(
-                        new Label(hourFmt.format(fe.getTime().atZone(cityZone))),
-                        new Label(String.format("%.0f°", fe.getTemperature()))
+                        new Label(hourFmt.format(fe.time().atZone(cityZone))),
+                        new Label(String.format("%.0f°", fe.temperature()))
                 );
                 hourBox.setAlignment(Pos.CENTER);
                 hourBox.getStyleClass().add("hour-item");
@@ -339,9 +339,9 @@ public class WeatherApp extends Application {
 
             for (ForecastEntry fe : forecast) {
                 String line = String.format("%s   %.0f°   %s",
-                        dayFmt.format(fe.getTime().atZone(cityZone)),
-                        fe.getTemperature(),
-                        fe.getDescription());
+                        dayFmt.format(fe.time().atZone(cityZone)),
+                        fe.temperature(),
+                        fe.description());
                 forecastList.getItems().add(line);
             }
 
@@ -351,13 +351,13 @@ public class WeatherApp extends Application {
             String historyEntry = String.format("%s - %s (%s)",
                     LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM HH:mm")),
                     city,
-                    current.getDescription());
+                    current.description());
             historyItems.addFirst(historyEntry);
 
             playFadeIn(centerPane);
             playFadeIn(historyPane);
 
-            updateBackground(current.getDescription());
+            updateBackground(current.description());
         });
     }
 
